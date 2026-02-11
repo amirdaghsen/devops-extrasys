@@ -2,9 +2,19 @@ FROM jenkins/jenkins:lts
 
 USER root
 
+# Install Docker + Git + Curl + Unzip + JDK17
 RUN apt-get update && \
-    apt-get install -y docker.io && \
+    apt-get install -y \
+    docker.io \
+    git \
+    curl \
+    unzip \
+    openjdk-17-jdk && \
     groupadd -g 999 docker || true && \
     usermod -aG docker jenkins
+
+# Force Java 17 as default runtime
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 USER jenkins

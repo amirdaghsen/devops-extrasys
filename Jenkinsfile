@@ -24,10 +24,14 @@ pipeline {
         stage('Build Project') {
             steps {
             dir('eventsProject') {
-                    sh 'java -version'
+    sh 'echo "JAVA HOME = $JAVA_HOME"'
+    sh 'which java'
+    sh 'java -version'
+    sh 'mvn -version'
+    sh 'mvn clean install -DskipTests'
+}
 
-            sh 'mvn clean install -DskipTests'
-}            }
+                       }
         }
     }
 }

@@ -2,19 +2,28 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-# Install Docker + Git + Curl + Unzip + JDK17
+# Install basic tools
 RUN apt-get update && \
-    apt-get install -y \
-    docker.io \
-    git \
-    curl \
-    unzip \
-    openjdk-17-jdk && \
-    groupadd -g 999 docker || true && \
-    usermod -aG docker jenkins
+    apt-get install -y wget gnupg2 curl git unzip lsb-release && \
+    rm -rf /var/lib/apt/lists/*
+
+# Add Temurin GPG key and repo (modern method)
+RUN mkdir -p /etc/apt/keyrings && \
+    wget -qO /etc/apt/keyrings/adoptium.gpg https://packages.adoptium.net/artifactory/api/gpg/key/public && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(lsb_release -cs) main" \
+    > /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y temurin-17-jdk && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Docker client (optional)
+RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
+
+# Add Jenkins user to Docker group
+RUN groupadd -g 999 docker || true && usermod -aG docker jenkins
 
 # Force Java 17 as default runtime
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 USER jenkins

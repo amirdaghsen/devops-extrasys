@@ -23,7 +23,9 @@ pipeline {
 
         stage('Build Project') {
             steps {
-                    dir('eventsProject') {
+            dir('eventsProject') {
+                    sh 'java -version'
+
             sh 'mvn clean install -DskipTests'
 }            }
         }

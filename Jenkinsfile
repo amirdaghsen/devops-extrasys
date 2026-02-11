@@ -2,36 +2,32 @@ pipeline {
     agent any
 
     tools {
+        // Use the Maven tool configured in Jenkins
         maven 'Maven3'
+        // Use JDK 17 configured in Jenkins global tools
         jdk 'JDK17'
+    }
 
+    environment {
+        // Optional: force JAVA_HOME in case container overrides it
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
-
-        stage('Checkout Code') {
+        stage('Build') {
             steps {
-                checkout scm
+                dir('eventsProject') {
+                    echo "=== DEBUG: Real Java ==="
+                    sh 'echo "JAVA HOME = $JAVA_HOME"'
+                    sh 'which java'
+                    sh 'java -version'
+                    sh 'mvn -version'
+
+                    echo "=== Building Project ==="
+                    sh 'mvn clean install -DskipTests'
+                }
             }
-        }
-
-        stage('Verify Tools') {
-            steps {
-                sh 'mvn -v'
-            }
-        }
-
-        stage('Build Project') {
-            steps {
-            dir('eventsProject') {
-    sh 'echo "JAVA HOME = $JAVA_HOME"'
-    sh 'which java'
-    sh 'java -version'
-    sh 'mvn -version'
-    sh 'mvn clean install -DskipTests'
-}
-
-                       }
         }
     }
 }

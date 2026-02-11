@@ -21,7 +21,7 @@ pipeline {
 
         stage('Build Project') {
             steps {
-                    dir('event-app') {
+                    dir('eventsProject') {
             sh 'mvn clean install -DskipTests'
 }            }
         }

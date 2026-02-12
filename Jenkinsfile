@@ -16,18 +16,23 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
-                dir('eventsProject') {
-                    echo "=== DEBUG: Real Java ==="
-                    sh 'echo "JAVA HOME = $JAVA_HOME"'
-                    sh 'which java'
-                    sh 'java -version'
-                    sh 'mvn -version'
+    steps {
+        dir('eventsProject') {
+            sh '''
+            export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+            export PATH=$JAVA_HOME/bin:$PATH
 
-                    echo "=== Building Project ==="
-                    sh 'mvn clean install -DskipTests'
-                }
-            }
+            echo "=== FORCED JAVA ==="
+            echo $JAVA_HOME
+            which java
+            java -version
+
+            mvn clean package -DskipTests
+            '''
         }
+    }
+}
+
+
     }
 }
